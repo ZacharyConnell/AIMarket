@@ -52,7 +52,7 @@ app.use((req, res, next) => {
 
   // Serve static files in production
   if (app.get("env") === "production") {
-    const staticPath = path.join(__dirname, "../../client/src");
+    const staticPath = path.join(__dirname, "../../docs/src");
     app.use(express.static(staticPath));
 
     // Serve index.html for all routes (SPA)

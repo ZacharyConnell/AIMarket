@@ -51,7 +51,7 @@ export async function setupVite(app: Express, server: Server) {
       const clientTemplate = path.resolve(
         __dirname,
         "..",
-        "client",
+        "docs", // Updated to point to the docs folder
         "index.html",
       );
 
@@ -71,7 +71,7 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(__dirname, "public");
+  const distPath = path.resolve(__dirname, "docs"); // Updated to point to the docs folder
 
   if (!fs.existsSync(distPath)) {
     throw new Error(
