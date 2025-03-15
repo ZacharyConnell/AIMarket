@@ -15,7 +15,7 @@ import RequestProject from "@/pages/request-project";
 import MessagingPage from "@/pages/messaging-page";
 import NewsPage from "@/pages/news-page";
 import AboutPage from "@/pages/about-page";
-import ChatTest from "@/pages/chat-test";
+import FloatingChatWidget from "@/components/FloatingChatWidget";
 import { ProtectedRoute } from "@/lib/protected-route";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -33,7 +33,6 @@ function Router() {
           <Route path="/products/:id" component={ProductDetail} />
           <Route path="/news" component={NewsPage} />
           <Route path="/about" component={AboutPage} />
-          <Route path="/chat" component={ChatTest} />
           <ProtectedRoute path="/profile" component={ProfilePage} />
           <ProtectedRoute path="/dashboard" component={DashboardPage} />
           <ProtectedRoute path="/request-project" component={RequestProject} />
@@ -51,6 +50,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <Router />
+        <FloatingChatWidget />
         <Toaster />
       </AuthProvider>
     </QueryClientProvider>

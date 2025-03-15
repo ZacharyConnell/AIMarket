@@ -34,7 +34,6 @@ const Navbar = () => {
     { name: "Products", path: "/products" },
     { name: "Features", path: "/#features" },
     { name: "AI News", path: "/news" },
-    { name: "AI Chat", path: "/chat" },
     { name: "About", path: "/about" }
   ];
 
