@@ -56,7 +56,7 @@ Tags: ${product.tags?.join(', ') || 'None'}
 `;
 
   const completion = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
     messages: [
       { role: "system", content: VERIFICATION_PROMPT },
       { role: "user", content: productDetails }
@@ -84,7 +84,7 @@ Tags: ${product.tags?.join(', ') || 'None'}
 
 export async function getChatbotResponse(userMessage: string): Promise<ChatResponse> {
   const completion = await openai.chat.completions.create({
-    model: "gpt-4",
+    model: "gpt-4o", // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
     messages: [
       { role: "system", content: CHATBOT_PROMPT },
       { role: "user", content: userMessage }
