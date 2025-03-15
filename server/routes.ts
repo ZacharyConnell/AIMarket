@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth } from "./auth";
-import { insertWaitlistSchema, insertProductSchema, insertProjectSchema, insertMessageSchema } from "@shared/schema";
+import { insertWaitlistSchema, insertProductSchema, insertProjectSchema, insertMessageSchema, productVerificationSchema } from "@shared/schema";
 import { ZodError } from "zod";
 import { fromZodError } from "zod-validation-error";
 
@@ -77,6 +77,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(products);
     } catch (error) {
       res.status(500).json({ message: "Failed to fetch products by seller" });
+    }
+  });
+  
+  // Product Verification API - Must be placed before the generic /api/products/:id route
+  app.get("/api/products/verification/pending", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    // Only admin users can view pending products
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "You don't have permission to access this resource" });
+    }
+    
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+      const pendingProducts = await storage.getPendingProducts(limit, offset);
+      res.json(pendingProducts);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch pending products" });
     }
   });
 
@@ -164,6 +185,65 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     } catch (error) {
       res.status(500).json({ message: "Failed to delete product" });
+    }
+  });
+  
+  // Product Verification API
+  
+  app.post("/api/products/:id/verify", async (req, res) => {
+    if (!req.isAuthenticated()) {
+      return res.status(401).json({ message: "Authentication required" });
+    }
+    
+    // Only admin users can verify products manually
+    if (req.user.role !== "admin" && !req.body.automated) {
+      return res.status(403).json({ message: "You don't have permission to verify products" });
+    }
+    
+    try {
+      const productId = parseInt(req.params.id);
+      const product = await storage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+
+      // If this is an automated verification
+      if (req.body.automated) {
+        const { verifyProduct } = await import('./ai-service');
+        const verificationResult = await verifyProduct(product);
+        
+        const updatedProduct = await storage.verifyProduct(
+          productId,
+          verificationResult.status,
+          verificationResult.notes
+        );
+        
+        res.json({
+          ...updatedProduct,
+          riskScore: verificationResult.riskScore
+        });
+      } else {
+        // Manual verification by admin
+        const { verificationStatus, verificationNotes } = productVerificationSchema.parse({
+          ...req.body,
+          productId
+        });
+        
+        const updatedProduct = await storage.verifyProduct(
+          productId,
+          verificationStatus,
+          verificationNotes
+        );
+        
+        res.json(updatedProduct);
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(400).json({ message: error.message });
+      } else {
+        const errorMessage = handleZodError(error);
+        res.status(400).json({ message: errorMessage });
+      }
     }
   });
 
@@ -318,6 +398,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(updatedMessage);
     } catch (error) {
       res.status(500).json({ message: "Failed to mark message as read" });
+    }
+  });
+
+  // Chatbot API
+  app.post("/api/chat", async (req, res) => {
+    try {
+      const { message } = req.body;
+      if (!message) {
+        return res.status(400).json({ message: "Message is required" });
+      }
+
+      const { getChatbotResponse } = await import('./ai-service');
+      const response = await getChatbotResponse(message);
+      res.json(response);
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(500).json({ message: error.message });
+      } else {
+        res.status(500).json({ message: "Failed to get chatbot response" });
+      }
     }
   });
 
