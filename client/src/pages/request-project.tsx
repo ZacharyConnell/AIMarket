@@ -54,12 +54,28 @@ const projectSchema = z.object({
   title: z.string().min(5, { message: "Title must be at least 5 characters long" }),
   description: z.string().min(20, { message: "Description must be at least 20 characters long" }),
   requirements: z.string().min(20, { message: "Requirements must be at least 20 characters long" }),
-  budget: z.string().optional(),
+  minBudget: z.string().optional(),
+  maxBudget: z.string().optional(),
   deadline: z.string().optional(),
   agreeToTerms: z.boolean().refine(val => val === true, {
     message: "You must agree to the terms and conditions",
   }),
-});
+})
+.refine(
+  (data) => {
+    // If both budget fields are provided, ensure maxBudget is greater than or equal to minBudget
+    if (data.minBudget && data.maxBudget) {
+      const min = parseInt(data.minBudget);
+      const max = parseInt(data.maxBudget);
+      return !isNaN(min) && !isNaN(max) && max >= min;
+    }
+    return true;
+  },
+  {
+    message: "Maximum budget must be greater than or equal to minimum budget",
+    path: ["maxBudget"],
+  }
+);
 
 const projectCategories = [
   { value: "content-creation", label: "Content Creation" },
@@ -83,7 +99,8 @@ const RequestProject = () => {
       title: "",
       description: "",
       requirements: "",
-      budget: "",
+      minBudget: "",
+      maxBudget: "",
       deadline: "",
       agreeToTerms: false,
     },
@@ -93,14 +110,16 @@ const RequestProject = () => {
     mutationFn: async (projectData: Omit<z.infer<typeof projectSchema>, "agreeToTerms">) => {
       if (!user) throw new Error("You must be logged in to submit a project request");
       
-      // Convert budget to number if provided
-      const budget = projectData.budget ? parseInt(projectData.budget) : undefined;
+      // Convert budget values to numbers if provided
+      const minBudget = projectData.minBudget ? parseInt(projectData.minBudget) : undefined;
+      const maxBudget = projectData.maxBudget ? parseInt(projectData.maxBudget) : undefined;
       
       const projectRequest: InsertProject = {
         title: projectData.title,
         description: projectData.description,
         requirements: projectData.requirements,
-        budget,
+        minBudget,
+        maxBudget,
         deadline: projectData.deadline || undefined,
         userId: user.id,
       };
@@ -213,22 +232,41 @@ const RequestProject = () => {
                   </FormDescription>
                 </FormItem>
                 
-                <FormField
-                  control={form.control}
-                  name="budget"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Budget (USD)</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="e.g., 500" {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Optional. Provide your budget range.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium">Budget Range (USD)</h3>
+                  <div className="flex items-center gap-2">
+                    <FormField
+                      control={form.control}
+                      name="minBudget"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Minimum</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g., 500" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <span className="mt-8">-</span>
+                    <FormField
+                      control={form.control}
+                      name="maxBudget"
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel>Maximum</FormLabel>
+                          <FormControl>
+                            <Input type="number" placeholder="e.g., 1000" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                  <FormDescription>
+                    Optional. Provide your budget range to help developers understand your constraints.
+                  </FormDescription>
+                </div>
               </div>
               
               <FormField

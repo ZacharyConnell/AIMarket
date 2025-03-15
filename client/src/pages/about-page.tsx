@@ -141,30 +141,25 @@ const AboutPage = () => {
         </div>
       </div>
 
-      {/* Meet Our Team */}
+      {/* Platform information */}
       <div className="mb-24">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Platform</h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            The passionate people behind AIMarket
+            Building a transparent, secure marketplace for AI innovation
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {teamMembers.map((member, index) => (
-            <div key={index} className="text-center">
-              <div className="w-32 h-32 rounded-full overflow-hidden mx-auto mb-4">
-                <img 
-                  src={member.image} 
-                  alt={member.name} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <h3 className="font-bold text-gray-900">{member.name}</h3>
-              <p className="text-blue-600 mb-2">{member.role}</p>
-              <p className="text-sm text-gray-600">{member.bio}</p>
-            </div>
-          ))}
+        <div className="max-w-3xl mx-auto text-center">
+          <p className="text-gray-600 mb-6">
+            AIMarket operates as a transparent, community-focused platform that prioritizes the needs of both AI creators and users. 
+            Our platform is designed to maintain anonymity where needed while providing robust verification processes 
+            for all AI products listed in our marketplace.
+          </p>
+          <p className="text-gray-600">
+            We're committed to responsible AI development and accessibility, with a business model that sustains 
+            platform operations through minimal transaction fees rather than intrusive advertising or data collection.
+          </p>
         </div>
       </div>
 
