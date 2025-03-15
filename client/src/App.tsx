@@ -8,6 +8,7 @@ import HomePage from "@/pages/home-page";
 import AuthPage from "@/pages/auth-page";
 import ProductListing from "@/pages/product-listing";
 import ProductDetail from "@/pages/product-detail";
+import ProductCreate from "@/pages/product-create";
 import ProfilePage from "@/pages/profile-page";
 import DashboardPage from "@/pages/dashboard-page";
 import RequestProject from "@/pages/request-project";
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/" component={HomePage} />
           <Route path="/auth" component={AuthPage} />
           <Route path="/products" component={ProductListing} />
+          <ProtectedRoute path="/products/create" component={ProductCreate} />
           <Route path="/products/:id" component={ProductDetail} />
           <Route path="/news" component={NewsPage} />
           <Route path="/about" component={AboutPage} />

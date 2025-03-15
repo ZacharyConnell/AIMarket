@@ -11,32 +11,7 @@ import { Separator } from "@/components/ui/separator";
 import { Shield, Check, Award, Users, Code, Heart } from "lucide-react";
 
 const AboutPage = () => {
-  const teamMembers = [
-    {
-      name: "Sarah Johnson",
-      role: "CEO & Founder",
-      bio: "Former AI research lead with over 15 years of experience in developing AI solutions for enterprise clients.",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-    },
-    {
-      name: "David Chen",
-      role: "CTO",
-      bio: "AI developer and architect who has built AI systems for Fortune 500 companies. Expert in machine learning and natural language processing.",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-    },
-    {
-      name: "Maya Rodriguez",
-      role: "Head of Product",
-      bio: "Product manager with a passion for creating user-friendly AI experiences. Previously led product at several successful tech startups.",
-      image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-    },
-    {
-      name: "James Wilson",
-      role: "Head of Partnerships",
-      bio: "Business development expert focused on building strategic partnerships with AI developers and enterprise customers.",
-      image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-    }
-  ];
+  // No team members information as requested for anonymity
 
   const values = [
     {

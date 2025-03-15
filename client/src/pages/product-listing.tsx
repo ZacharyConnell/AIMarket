@@ -25,7 +25,7 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { StarIcon, StarHalfIcon, Search, SlidersHorizontal } from "lucide-react";
+import { StarIcon, StarHalfIcon, Search, SlidersHorizontal, Package } from "lucide-react";
 import { formatCurrency } from "@/lib/utils";
 
 const ProductListing = () => {
@@ -174,11 +174,18 @@ const ProductListing = () => {
           </p>
         </div>
         
-        <div className="mt-4 md:mt-0 flex items-center">
+        <div className="mt-4 md:mt-0 flex items-center space-x-2">
+          <Link href="/products/create">
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Package className="h-4 w-4 mr-2" />
+              List Your Product
+            </Button>
+          </Link>
+          
           <Button
             variant="outline"
             onClick={() => setShowFilters(!showFilters)}
-            className="mr-2 md:hidden"
+            className="md:hidden"
           >
             <SlidersHorizontal className="h-4 w-4 mr-2" />
             Filters
