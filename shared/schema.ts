@@ -24,6 +24,9 @@ export const products = pgTable("products", {
   tags: text("tags").array(),
   sellerId: integer("seller_id").notNull(),
   featured: boolean("featured").default(false),
+  verificationStatus: text("verification_status").default("pending").notNull(),
+  verificationNotes: text("verification_notes"),
+  verifiedAt: timestamp("verified_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -124,6 +127,13 @@ export const loginSchema = z.object({
   password: z.string().min(1, { message: "Password is required" }),
 });
 
+// Schema for product verification
+export const productVerificationSchema = z.object({
+  productId: z.number().int().positive(),
+  verificationStatus: z.enum(["pending", "approved", "rejected"]),
+  verificationNotes: z.string().optional(),
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -138,3 +148,4 @@ export type InsertNews = z.infer<typeof insertNewsSchema>;
 export type Waitlist = typeof waitlist.$inferSelect;
 export type InsertWaitlist = z.infer<typeof insertWaitlistSchema>;
 export type Login = z.infer<typeof loginSchema>;
+export type ProductVerification = z.infer<typeof productVerificationSchema>;

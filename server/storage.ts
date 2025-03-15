@@ -22,6 +22,10 @@ export interface IStorage {
   updateProduct(id: number, product: Partial<Product>): Promise<Product | undefined>;
   deleteProduct(id: number): Promise<boolean>;
   
+  // Product verification operations
+  getPendingProducts(limit?: number, offset?: number): Promise<Product[]>;
+  verifyProduct(productId: number, status: string, notes?: string): Promise<Product | undefined>;
+  
   // Project operations
   getProject(id: number): Promise<Project | undefined>;
   getProjects(limit?: number, offset?: number): Promise<Project[]>;
@@ -181,7 +185,10 @@ export class MemStorage implements IStorage {
     const product: Product = {
       ...insertProduct,
       id,
-      createdAt: now
+      createdAt: now,
+      verificationStatus: "pending",
+      verificationNotes: null,
+      verifiedAt: null
     };
     this.productsMap.set(id, product);
     return product;
@@ -198,6 +205,30 @@ export class MemStorage implements IStorage {
 
   async deleteProduct(id: number): Promise<boolean> {
     return this.productsMap.delete(id);
+  }
+  
+  // Product verification operations
+  async getPendingProducts(limit = 10, offset = 0): Promise<Product[]> {
+    const products = Array.from(this.productsMap.values())
+      .filter(product => product.verificationStatus === "pending")
+      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    return products.slice(offset, offset + limit);
+  }
+
+  async verifyProduct(productId: number, status: string, notes?: string): Promise<Product | undefined> {
+    const product = this.productsMap.get(productId);
+    if (!product) return undefined;
+    
+    const now = new Date();
+    const updatedProduct = { 
+      ...product, 
+      verificationStatus: status,
+      verificationNotes: notes || null,
+      verifiedAt: status === "pending" ? null : now
+    };
+    
+    this.productsMap.set(productId, updatedProduct);
+    return updatedProduct;
   }
 
   // Project operations
